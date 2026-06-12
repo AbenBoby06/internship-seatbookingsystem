@@ -1,0 +1,181 @@
+<div class="page-container">
+
+    <div class="welcome-card">
+    <div class="welcome-header">
+        <div>
+            <h1>Hi, {{empname}}</h1>
+        </div>
+        <button class="logout-btn" (click)="Logout()">
+            Logout
+        </button>
+    </div>
+</div>
+
+    <div class="search-card">
+        <h2>Book a Seat</h2>
+        <div class="sameline">
+            <div class="form-grp">
+                <label>From Date</label>
+                <input type="date" #fromInput>
+            </div>
+            <div class="form-grp">
+                <label>To Date</label>
+                <input type="date" #toInput>
+            </div>
+            <div class="form-grp">
+                <label>Location</label>
+                <select (input)="loc = $any($event.target).value">
+                    <option value="">Select Location</option>
+                    <option>TVM</option>
+                    <option>Kochi</option>
+                </select>
+            </div>
+
+            <div class="form-grp">
+                <label>Project</label>
+                <input
+                    type="text"
+                    placeholder="Enter Project Name"
+                    (input)="proj = $any($event.target).value">
+            </div>
+        </div>
+        <button class="primary-btn" (click)="checkseats(fromInput.value,toInput.value)">Check Available Seats</button>
+    </div>
+
+    <div class="action-bar">
+        <button class="success-btn" (click)="getsuggestion()">
+            Seat Suggestions
+        </button>
+
+        <button class="success-btn" (click)="mybookedseat()">
+            My Bookings
+        </button>
+    </div>
+
+    <div *ngIf="getsugbool">
+
+        <div class="section-header">
+            <h2>Available Seats</h2>
+        </div>
+
+        <div *ngFor="let date of dates">
+
+            <div class="date-card">
+
+                <h3>{{date}}</h3>
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Seat</th>
+                            <th>Department</th>
+                            <th>Project</th>
+                            <th>Module</th>
+                            <th>Floor</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <ng-container *ngFor="let seat of unbookedseat">
+
+                            <tr *ngIf="date == seat.date">
+
+                                <td>{{seat.seatName}}</td>
+                                <td>{{seat.department}}</td>
+                                <td>{{seat.projName}}</td>
+                                <td>{{seat.moduleName}}</td>
+                                <td>{{seat.floorNo}}</td>
+
+                                <td>
+                                    <button
+                                        class="book-btn"
+                                        (click)="bookseat(seat)">
+                                        Book
+                                    </button>
+                                </td>
+
+                            </tr>
+
+                        </ng-container>
+
+                        <tr *ngIf="seatavailablebyoffice == 0">
+                            <td colspan="6" class="empty-msg">
+                                No seats available. Please contact HR.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div *ngIf="myseatbool">
+
+        <div class="section-header">
+            <h2>My Booked Seats</h2>
+        </div>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Seat</th>
+                    <th>Project</th>
+                    <th>Module</th>
+                    <th>Floor</th>
+                    <th>Location</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <ng-container *ngFor="let seat of bookedseat">
+
+                    <tr *ngIf="seat.empId == empid">
+
+                        <td>{{seat.seats?.seatName}}</td>
+                        <td>{{seat.seats?.project?.projName}}</td>
+                        <td>{{seat.seats?.module?.moduleName}}</td>
+                        <td>{{seat.seats?.module?.floorNo}}</td>
+                        <td>{{seat.seats?.module?.location?.locName}}</td>
+                        <td>{{seat.date}}</td>
+
+                        <td>
+                            <button
+                                class="cancel-btn"
+                                (click)="cancelbooking(seat.id!)">
+                                Cancel
+                            </button>
+                        </td>
+
+                    </tr>
+
+                </ng-container>
+
+            </tbody>
+
+            <tbody *ngIf="!seatsbooked">
+
+                <tr>
+                    <td colspan="7" class="empty-msg">
+                        No seats booked yet
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

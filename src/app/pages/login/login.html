@@ -1,0 +1,12 @@
+<div class="login-container">
+  <div class="login-card">
+    <h1>Login</h1>
+
+    <div class="form-group">
+      <label for="id">Employee ID</label>
+      <input id="id" type="text" placeholder="Enter your ID" (input)="id = $any($event.target).value"/>
+    </div>
+
+    <button (click)="login()">Login</button>
+  </div>
+</div>

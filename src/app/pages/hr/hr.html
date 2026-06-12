@@ -1,0 +1,222 @@
+<div class="page-container">
+        <div class="header-card">
+        <div class="header-content">
+            <div>
+                <h1>Hi, {{empName}}</h1>
+            </div>
+
+            <button class="logout-btn" (click)="logout()">
+                Logout
+            </button>
+        </div>
+    </div>
+
+    <div class="horizontal">
+
+        <div class="form-group">
+            <h1>Assign Module</h1>
+
+            <label>Location</label>
+            <select (input)="modlocname = $any($event.target).value">
+                <option value="">-- Select Location --</option>
+                <option>TVM</option>
+                <option>Kochi</option>
+            </select>
+
+            <label>Floor</label>
+            <select (input)="modfloor = $any($event.target).value">
+                <option value="">-- Select Floor --</option>
+                <option *ngIf="modlocname == 'TVM'">1</option>
+                <option *ngIf="modlocname == 'Kochi'">2</option>
+                <option *ngIf="modlocname == 'TVM'">4</option>
+            </select>
+
+            <label>Module</label>
+            <select (input)="modmodname = $any($event.target).value">
+                <option value="">-- Select Module --</option>
+                <option>M1</option>
+                <option>M2</option>
+                <option *ngIf="modlocname == 'TVM' && modfloor == 1">M3</option>
+            </select>
+
+            <label>Department</label>
+            <input
+                type="text"
+                placeholder="Enter Department"
+                (input)="moddept = $any($event.target).value">
+
+            <button (click)="assignModule()">
+                Assign Module
+            </button>
+        </div>
+
+        <div class="form-group">
+            <h1>Assign Seats</h1>
+
+            <label>Department</label>
+            <input
+                type="text"
+                placeholder="Enter Department"
+                (input)="seatdept = $any($event.target).value">
+
+            <label>Project</label>
+            <input
+                type="text"
+                placeholder="Enter Project Name"
+                (input)="projname = $any($event.target).value">
+
+            <label>Location</label>
+            <select (input)="seatlocname = $any($event.target).value">
+                <option value="">-- Select Location --</option>
+                <option>TVM</option>
+                <option>Kochi</option>
+            </select>
+
+            <label>Floor</label>
+            <select (input)="seatfloor = $any($event.target).value">
+                <option value="">-- Select Floor --</option>
+                <option *ngIf="seatlocname == 'TVM'">1</option>
+                <option *ngIf="seatlocname == 'Kochi'">2</option>
+                <option *ngIf="seatlocname == 'TVM'">4</option>
+            </select>
+
+            <label>Module</label>
+            <select (input)="seatmodname = $any($event.target).value">
+                <option value="">-- Select Module --</option>
+                <option>M1</option>
+                <option>M2</option>
+                <option *ngIf="seatlocname == 'TVM' && seatfloor == 1">M3</option>
+            </select>
+
+            <label>Number of Seats</label>
+            <input
+                type="number"
+                placeholder="Enter Number of Seats"
+                (input)="seatno = $any($event.target).value">
+
+            <button (click)="addseat()">
+                Add Seats
+            </button>
+        </div>
+
+    </div>
+
+    <div *ngFor="let dept of department" class="table-container">
+        <table *ngIf="dept.deptId == 3">
+            <thead>
+                <tr>
+                    <td colspan="3">
+                        Unassigned Modules
+                    </td>
+                </tr>
+                <tr>
+                    <td>Module</td>
+                    <td>Location</td>
+                    <td>Floor</td>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let mod of module">
+
+                    <tr *ngIf="mod.deptId == dept.deptId">
+                        <td>{{ mod.moduleName }}</td>
+                        <td>{{ mod.location?.locName }}</td>
+                        <td>{{ mod.floorNo }}</td>
+                    </tr>
+
+                </ng-container>
+            </tbody>
+        </table>
+
+        <table *ngIf="dept.deptId != 3">
+
+            <thead>
+                <tr>
+                    <td colspan="6">
+                        {{ dept.deptName }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Module</td>
+                    <td>Location</td>
+                    <td>Floor</td>
+                    <td>Seats Assigned</td>
+                    <td>Seats Available</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                <ng-container *ngFor="let mod of module">
+                    <tr *ngIf="mod.deptId == dept.deptId">
+                        <td>{{ mod.moduleName }}</td>
+                        <td>{{ mod.location?.locName }}</td>
+                        <td>{{ mod.floorNo }}</td>
+                        <td>{{ mod.seatsAssigned }}</td>
+                        <td>{{ mod.seatsUnassigned }}</td>
+                        <td>
+                            <button
+                                class="expand-btn"
+                                (click)="expand(mod.moduleId!, dept.deptId)">
+                                Expand
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="expandedkey === (dept.deptId + '-' + mod.moduleId)">
+                        <td colspan="6">
+                            <div class="expanded-section">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <td>Project Name</td>
+                                            <td>Seats Assigned</td>
+                                            <td>Action</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let count of projCountsMap[mod.moduleId!]">
+                                            <ng-container *ngIf="count.count > 0">
+                                                <td>
+                                                    {{ count.project.projName }}
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        class="counter-btn"
+                                                        *ngIf="count.isEditing"
+                                                        (click)="countchange(count,'minus')">
+                                                        -
+                                                    </button>
+                                                    {{ count.count }}
+                                                    <button
+                                                        class="counter-btn"
+                                                        *ngIf="count.isEditing"
+                                                        (click)="countchange(count,'plus')">
+                                                        +
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        class="edit-btn"
+                                                        *ngIf="!count.isEditing"
+                                                        (click)="seatedit(count)">
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        class="update-btn"
+                                                        *ngIf="count.isEditing"
+                                                        (click)="updateseat(count, mod.moduleId!)">
+                                                        Update
+                                                    </button>
+                                                </td>
+                                            </ng-container>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</div>
